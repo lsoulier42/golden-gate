@@ -7,6 +7,10 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { UsersPage } from './pages/admin/UsersPage';
+import { DashboardPage } from './pages/admin/DashboardPage';
+import { ApiKeysPage } from './pages/admin/ApiKeysPage';
+import { ModelsPage } from './pages/admin/ModelsPage';
+import { UsagePage } from './pages/admin/UsagePage';
 
 /** Redirects the root path according to the authentication state. */
 export function RootRedirect() {
@@ -37,6 +41,38 @@ export default function App() {
         }
       >
         <Route path="/profile" element={<ProfilePage />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <RequireRole role="ROLE_ADMIN">
+              <DashboardPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/api-keys"
+          element={
+            <RequireRole role="ROLE_ADMIN">
+              <ApiKeysPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/models"
+          element={
+            <RequireRole role="ROLE_ADMIN">
+              <ModelsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/usage"
+          element={
+            <RequireRole role="ROLE_ADMIN">
+              <UsagePage />
+            </RequireRole>
+          }
+        />
         <Route
           path="/admin/users"
           element={

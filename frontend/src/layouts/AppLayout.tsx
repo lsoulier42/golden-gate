@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { LogOut, Shield, UserRound, type LucideIcon } from 'lucide-react';
+import { BarChart3, Boxes, KeyRound, LayoutDashboard, LogOut, Shield, UserRound, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { LogoMark } from '../components/LogoMark';
 import { Badge } from '../components/ui';
@@ -53,7 +53,15 @@ export function AppLayout() {
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           <NavItem to="/profile" icon={UserRound} label="Profil" />
-          {isAdmin && <NavItem to="/admin/users" icon={Shield} label="Utilisateurs" />}
+          {isAdmin && (
+            <>
+              <NavItem to="/admin/dashboard" icon={LayoutDashboard} label="Tableau de bord" />
+              <NavItem to="/admin/api-keys" icon={KeyRound} label="Clés API" />
+              <NavItem to="/admin/models" icon={Boxes} label="Modèles" />
+              <NavItem to="/admin/usage" icon={BarChart3} label="Usage" />
+              <NavItem to="/admin/users" icon={Shield} label="Utilisateurs" />
+            </>
+          )}
         </nav>
 
         <div className="shrink-0 border-t border-line p-3">

@@ -30,7 +30,7 @@ export function LoginPage() {
       return;
     }
     const isAdmin = parseJwt(token)?.roles.includes('ROLE_ADMIN') ?? false;
-    navigate(isAdmin ? '/admin/users' : '/profile', { replace: true });
+    navigate(isAdmin ? '/admin/dashboard' : '/profile', { replace: true });
   };
 
   const handleSubmit = async (event: FormEvent) => {
