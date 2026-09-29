@@ -12,8 +12,22 @@ framework:
     php_errors:
         log: true
 
+    rate_limiter:
+        # Basic abuse guard, applied per API key. The MVP runs a single instance, so
+        # the default cache-backed storage is enough; a distributed limiter is post-MVP.
+        gateway_api_key:
+            policy: 'sliding_window'
+            limit: '%golden_gate.rate_limit_per_minute%'
+            interval: '1 minute'
+
 when@test:
     framework:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+        rate_limiter:
+            gateway_api_key:
+                # Low enough for the rate-limit test to reach it, high enough for the
+                # other tests: each test uses a fresh key and the limiter is reset
+                # explicitly where the exact count matters.
+                limit: 5

@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Answers every outbound HTTP call made by the test suite, so provider calls
+    # are always mocked. Public so tests can queue responses on it.
+    App\Tests\Http\ProviderMockResponseFactory:
+        public: true

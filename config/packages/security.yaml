@@ -22,11 +22,20 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
+        # Public LLM gateway: authenticated with Golden Gate API keys only.
+        # Administration JWTs are deliberately not accepted here, and gateway keys
+        # are not accepted on /api.
+        gateway:
+            pattern: ^/v1
+            stateless: true
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/v1, roles: ROLE_GATEWAY }
 
 when@test:
     security:

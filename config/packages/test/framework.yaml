@@ -1,0 +1,5 @@
+framework:
+    # Every HTTP call of the test environment is answered by the mock factory:
+    # the suite can never reach a real LLM provider.
+    http_client:
+        mock_response_factory: App\Tests\Http\ProviderMockResponseFactory

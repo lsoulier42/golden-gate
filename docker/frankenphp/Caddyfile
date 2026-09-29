@@ -14,9 +14,18 @@
 	root * /var/www/html/public
 	encode zstd br gzip
 
-	# API Symfony / API Platform (+ Swagger UI /api/docs).
-	@api path /api /api/*
-	handle @api {
+	# Borne la taille des corps de requête acceptés, en miroir de
+	# GatewayRequestBodyListener (1 Mo), pour que le gateway se comporte de la même
+	# façon quel que soit le serveur qui le précède.
+	request_body {
+		max_size 1MB
+	}
+
+	# API Symfony / API Platform (+ Swagger UI /api/docs), et API publique du
+	# gateway LLM (/v1/chat/completions, /v1/models) qui parle aux applications
+	# clientes et non au navigateur.
+	@backend path /api /api/* /v1 /v1/*
+	handle @backend {
 		php_server
 	}
 

@@ -44,3 +44,8 @@ services:
     # GoldenGateExtension, which reads config/packages/golden_gate.yaml.
     App\AI\Gateway\ModelGatewayInterface:
         alias: App\AI\Gateway\SymfonyAiModelGateway
+
+    # Rate limiter factories are keyed by name: point the gateway guard at its own.
+    App\Gateway\Http\GatewayRateLimiter:
+        arguments:
+            $gatewayApiKeyLimiter: '@limiter.gateway_api_key'
