@@ -1,0 +1,50 @@
+# Golden Gate gateway configuration.
+#
+# Providers hold the upstream credentials: their `api_key` must always reference an
+# environment variable (or a Symfony secret), never a literal value committed here.
+# Models expose a stable public alias on top of one provider + upstream model.
+#
+# Register a second provider by adding an entry here and pointing models at it: the
+# gateway resolves everything else, and clients only ever see the public alias.
+golden_gate:
+    providers:
+        # OVHcloud AI Endpoints — OpenAI-compatible API.
+        ovhcloud:
+            type: generic
+            base_url: '%env(OVHCLOUD_BASE_URL)%'
+            api_key: '%env(OVHCLOUD_API_KEY)%'
+            timeout: 60
+
+        # Mistral AI — reached through its dedicated Symfony AI bridge.
+        mistral:
+            type: mistral
+            base_url: '%env(MISTRAL_BASE_URL)%'
+            api_key: '%env(MISTRAL_API_KEY)%'
+            timeout: 60
+
+    models:
+        mistral-small:
+            provider: ovhcloud
+            upstream_model: 'Mistral-Small-3.2-24B-Instruct-2506'
+            input_price_per_million_usd: 0.10
+            output_price_per_million_usd: 0.30
+            context_window: 131072
+            description: 'Mistral Small 3.2 24B Instruct, served by OVHcloud AI Endpoints.'
+
+        qwen-32b:
+            provider: ovhcloud
+            upstream_model: 'Qwen3-32B'
+            input_price_per_million_usd: 0.09
+            output_price_per_million_usd: 0.36
+            context_window: 131072
+            description: 'Qwen3 32B, served by OVHcloud AI Endpoints.'
+
+        # Same gateway contract, different provider: this is what makes a client
+        # able to switch upstreams by changing the requested model alias only.
+        mistral-medium:
+            provider: mistral
+            upstream_model: 'mistral-medium-latest'
+            input_price_per_million_usd: 0.40
+            output_price_per_million_usd: 2.00
+            context_window: 131072
+            description: 'Mistral Medium, served by the Mistral AI API.'

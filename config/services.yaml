@@ -2,6 +2,9 @@ parameters:
     locale: fr
     app_env: '%env(APP_ENV)%'
     app_version: '%env(APP_VERSION)%'
+    # Requests allowed per API key and per minute, as a basic abuse guard.
+    # A distributed limit is a post-MVP concern.
+    golden_gate.rate_limit_per_minute: '%env(int:GATEWAY_RATE_LIMIT_PER_MINUTE)%'
 services:
     _defaults:
         autowire: true
@@ -9,9 +12,35 @@ services:
     App\:
         resource: '../src/'
         exclude:
+            # Framework plumbing and Doctrine entities.
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            # Data transfer objects, exceptions and value objects are not services:
+            # they are built by the gateway with explicit arguments.
+            - '../src/AI/Dto/'
+            - '../src/AI/Exception/'
+            - '../src/AI/Model/ModelDefinition.php'
+            - '../src/AI/Provider/ProviderDefinition.php'
+            - '../src/Dto/'
+            - '../src/Gateway/Error/'
+            - '../src/Money/'
+            - '../src/Security/Exception/'
+            - '../src/Usage/MonthlyConsumption.php'
+            - '../src/Usage/UsageStatus.php'
     App\OpenApi\OpenApiFactoryDecorator:
         decorates: api_platform.openapi.factory
         arguments: ['@.inner']
+
+    # Registries fed by GoldenGateExtension with the `golden_gate` configuration.
+    App\AI\Provider\ProviderRegistry:
+        arguments:
+            $providers: !tagged_iterator golden_gate.provider
+    App\AI\Model\ModelRegistry:
+        arguments:
+            $models: '%golden_gate.models%'
+
+    # Provider definitions, ProviderRegistry and ModelRegistry are declared by
+    # GoldenGateExtension, which reads config/packages/golden_gate.yaml.
+    App\AI\Gateway\ModelGatewayInterface:
+        alias: App\AI\Gateway\SymfonyAiModelGateway
